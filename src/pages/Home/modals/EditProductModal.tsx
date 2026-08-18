@@ -43,7 +43,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
 
     const defaultValues = {
         productName: product.productName,
-        productionPlan: product.productionPlan,
+        plannedQuantity: product.plannedQuantity,
         manufacturingOrder: product.manufacturingOrder,
         date: product.date ? new Date(product.date) : undefined,
     };
@@ -81,10 +81,10 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
                                 placeholder="Enter product name"
                             />
                             <SInput
-                                name="productionPlan"
-                                label="Production Plan"
+                                name="plannedQuantity"
+                                label="Planned Quantity"
                                 type="number"
-                                placeholder="Enter production plan"
+                                placeholder="Enter planned quantity"
                             />
                             <SInput
                                 name="manufacturingOrder"

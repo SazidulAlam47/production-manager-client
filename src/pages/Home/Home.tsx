@@ -45,7 +45,10 @@ const Home = () => {
                                         Product Name
                                     </TableHeadCell>
                                     <TableHeadCell className="px-2 py-2 sm:px-4 sm:py-3">
-                                        Production Plan
+                                        Planned Quantity
+                                    </TableHeadCell>
+                                    <TableHeadCell className="px-2 py-2 sm:px-4 sm:py-3">
+                                        Production Quantity
                                     </TableHeadCell>
                                     <TableHeadCell className="px-2 py-2 sm:px-4 sm:py-3">
                                         Manufacturing Order
@@ -70,7 +73,10 @@ const Home = () => {
                                             {product.productName}
                                         </TableCell>
                                         <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
-                                            {product.productionPlan}
+                                            {product.plannedQuantity}
+                                        </TableCell>
+                                        <TableCell className="px-2 py-2 sm:px-4 sm:py-3 font-medium text-blue-600 dark:text-blue-400">
+                                            {product.productionQuantity ?? 0}
                                         </TableCell>
                                         <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
                                             {product.manufacturingOrder}

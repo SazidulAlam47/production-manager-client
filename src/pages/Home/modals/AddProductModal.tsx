@@ -18,7 +18,7 @@ type AddProductModalProps = {
 const productDefaultValues = {
     date: undefined,
     productName: '',
-    productionPlan: '',
+    plannedQuantity: '',
     manufacturingOrder: '',
 };
 
@@ -83,10 +83,10 @@ const AddProductModal = ({
                                 placeholder="Enter product name"
                             />
                             <SInput
-                                name="productionPlan"
-                                label="Production Plan"
+                                name="plannedQuantity"
+                                label="Planned Quantity"
                                 type="number"
-                                placeholder="Enter production plan"
+                                placeholder="Enter planned quantity"
                             />
                             <SInput
                                 name="manufacturingOrder"
