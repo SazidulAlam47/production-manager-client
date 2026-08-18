@@ -1,11 +1,5 @@
-import {
-    Navbar,
-    NavbarCollapse,
-    NavbarToggle,
-} from 'flowbite-react';
-import Container from '../Container';
-import logo from '../../assets/logo.png';
 import { Link, useLocation } from 'react-router';
+import Container from '../Container';
 import { cn } from '../../utils/cn';
 
 const headerLinks = [
@@ -19,44 +13,33 @@ const Header = () => {
     const location = useLocation();
 
     return (
-        <>
-            <Container asChild>
-                <Navbar className="border-0 py-4">
-                    <Link to="/" className="flex items-center gap-2">
-                        <img
-                            src={logo}
-                            className="mr-3 h-10"
-                            alt="Production Manager Logo"
-                        />
-                        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-                            Production Manager
-                        </span>
-                    </Link>
-                    <div className="flex md:order-2 gap-2 items-center">
-                        <NavbarToggle />
-                    </div>
-                    <NavbarCollapse>
-                        {headerLinks.map((headerLink, index) => (
-                            <Link
-                                key={index}
-                                to={headerLink.path}
-                                className={cn(
-                                    'block py-2 pl-3 pr-4 md:p-0 hover:text-primary-700 transition-all font-medium',
-                                    {
-                                        'text-primary-700':
-                                            location.pathname ===
-                                            headerLink.path,
-                                    },
-                                )}
-                            >
-                                {headerLink.title}
-                            </Link>
-                        ))}
-                    </NavbarCollapse>
-                </Navbar>
+        <header className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
+            <Container className="py-4 flex items-center justify-between">
+                <Link
+                    to="/"
+                    className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-white hover:opacity-90 transition-opacity"
+                >
+                    Majesto Production Management
+                </Link>
+
+                <nav className="flex items-center gap-6">
+                    {headerLinks.map((link) => (
+                        <Link
+                            key={link.path}
+                            to={link.path}
+                            className={cn(
+                                'text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-white',
+                                location.pathname === link.path
+                                    ? 'text-gray-900 dark:text-white font-semibold'
+                                    : 'text-gray-500 dark:text-gray-400',
+                            )}
+                        >
+                            {link.title}
+                        </Link>
+                    ))}
+                </nav>
             </Container>
-            <hr className="text-gray-200" />
-        </>
+        </header>
     );
 };
 
