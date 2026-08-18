@@ -12,14 +12,22 @@ import {
 } from 'flowbite-react';
 import moment from 'moment';
 import { IoDocumentTextOutline } from 'react-icons/io5';
+import { HiOutlineDownload } from 'react-icons/hi';
 import { Link } from 'react-router';
 import AddProductModal from './modals/AddProductModal';
 import EditProductModal from './modals/EditProductModal';
 import DeleteProductModal from './modals/DeleteProductModal';
 import { useGetAllProductsQuery } from '../../redux/api/productApi';
+import { exportProductsToExcel } from '../../utils/exportToExcel';
 
 const Home = () => {
     const { data: products, isLoading } = useGetAllProductsQuery();
+
+    const handleDownloadExcel = () => {
+        if (products && products.length > 0) {
+            exportProductsToExcel(products, 'majesto_production_report');
+        }
+    };
 
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-10">
@@ -35,6 +43,15 @@ const Home = () => {
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
                         <AddProductModal buttonText="Add Product" />
+                        <Button
+                            size="xs"
+                            color="light"
+                            onClick={handleDownloadExcel}
+                            className="flex items-center"
+                        >
+                            <HiOutlineDownload className="mr-1.5 h-4 w-4" />
+                            Download Excel
+                        </Button>
                     </div>
                     <div className="overflow-x-auto rounded-md">
                         <Table className="text-xs sm:text-base" hoverable>
