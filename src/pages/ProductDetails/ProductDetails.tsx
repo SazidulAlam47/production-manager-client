@@ -18,6 +18,9 @@ import {
     TableRow,
     TextInput,
     Button,
+    Modal,
+    ModalBody,
+    ModalHeader,
 } from 'flowbite-react';
 import moment from 'moment';
 import { HiArrowLeft, HiOutlineDownload } from 'react-icons/hi';
@@ -30,7 +33,9 @@ const ProductDetails = () => {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
     const [barcodeInput, setBarcodeInput] = useState('');
+    const [showCongratsModal, setShowCongratsModal] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const prevProductionQtyRef = useRef<number | null>(null);
 
     const {
         data: product,
@@ -60,6 +65,26 @@ const ProductDetails = () => {
             navigate('/');
         }
     }, [isProductError, navigate]);
+
+    // Check if Planned Quantity === Production Quantity and trigger Congratulations modal
+    useEffect(() => {
+        if (product && product.plannedQuantity > 0) {
+            const isCompleted =
+                product.productionQuantity === product.plannedQuantity;
+            const hasQtyChanged =
+                prevProductionQtyRef.current !== product.productionQuantity;
+
+            if (isCompleted && hasQtyChanged) {
+                setShowCongratsModal(true);
+                const timer = setTimeout(() => {
+                    setShowCongratsModal(false);
+                }, 3500); // Auto-close after 3.5 seconds
+
+                return () => clearTimeout(timer);
+            }
+            prevProductionQtyRef.current = product.productionQuantity;
+        }
+    }, [product]);
 
     const handleAddBarcode = async (e?: FormEvent) => {
         if (e) {
@@ -119,6 +144,12 @@ const ProductDetails = () => {
         return null;
     }
 
+    // Calculate Remaining Quantity (never negative)
+    const remainingQuantity = Math.max(
+        0,
+        (product.plannedQuantity || 0) - (product.productionQuantity || 0),
+    );
+
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-8">
             {/* Back Button */}
@@ -136,67 +167,118 @@ const ProductDetails = () => {
             <SectionHeading
                 title={product.productName}
                 subTitle="Product Details & Barcode Management"
-                className="mb-8"
+                className="mb-6"
             />
 
-            <div className="space-y-8">
-                {/* 1. Product Info Section: 1:3 Grid Ratio */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* First Column (1 part): Date, Product Name, Manufacturing Order */}
-                    <div className="md:col-span-1 bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col justify-center space-y-4 shadow-xs">
-                        <div>
-                            <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
-                                Date
-                            </span>
-                            <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mt-0.5">
-                                {moment(product.date).format('Do MMM, YYYY')}
-                            </p>
-                        </div>
-                        <hr className="border-gray-100 dark:border-gray-700/60" />
-                        <div>
-                            <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
-                                Product Name
-                            </span>
-                            <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mt-0.5">
+            {/* Congratulations Modal */}
+            <Modal
+                show={showCongratsModal}
+                size="md"
+                onClose={() => setShowCongratsModal(false)}
+                popup
+                dismissible
+            >
+                <ModalHeader />
+                <ModalBody>
+                    <div className="text-center py-4 space-y-3">
+                        <div className="text-5xl animate-bounce">🎉</div>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            Congratulations!
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Production target of{' '}
+                            <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                {product.plannedQuantity}
+                            </span>{' '}
+                            units for{' '}
+                            <span className="font-semibold text-gray-900 dark:text-white">
                                 {product.productName}
-                            </p>
-                        </div>
-                        <hr className="border-gray-100 dark:border-gray-700/60" />
-                        <div>
-                            <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
-                                Manufacturing Order
-                            </span>
-                            <p className="text-sm sm:text-base font-semibold font-mono text-gray-900 dark:text-white mt-0.5">
-                                {product.manufacturingOrder}
-                            </p>
+                            </span>{' '}
+                            has been successfully completed!
+                        </p>
+                        <div className="pt-2">
+                            <Button
+                                color="success"
+                                className="mx-auto"
+                                size="xs"
+                                onClick={() => setShowCongratsModal(false)}
+                            >
+                                Great Job!
+                            </Button>
                         </div>
                     </div>
+                </ModalBody>
+            </Modal>
 
-                    {/* Second Column (3 parts): Planned Quantity & Production Quantity in large font */}
-                    <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {/* Planned Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                            <span className="text-sm sm:text-base uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-2">
-                                Planned Quantity
-                            </span>
-                            <span className="text-9xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                                {product.plannedQuantity}
-                            </span>
-                        </div>
-
-                        {/* Production Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                            <span className="text-sm sm:text-base uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-2">
-                                Production Quantity
-                            </span>
-                            <span className="text-9xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
-                                {product.productionQuantity ?? 0}
-                            </span>
-                        </div>
+            <div className="space-y-8">
+                {/* 1. Small Font Metadata Bar at the Top */}
+                <div className="bg-white dark:bg-gray-800 px-5 py-3.5 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-xs">
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">
+                            Date:{' '}
+                        </span>
+                        <span className="font-semibold text-gray-900 dark:text-white">
+                            {moment(product.date).format('Do MMM, YYYY')}
+                        </span>
+                    </div>
+                    <div className="hidden sm:block text-gray-300 dark:text-gray-600">
+                        |
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">
+                            Product Name:{' '}
+                        </span>
+                        <span className="font-semibold text-gray-900 dark:text-white">
+                            {product.productName}
+                        </span>
+                    </div>
+                    <div className="hidden sm:block text-gray-300 dark:text-gray-600">
+                        |
+                    </div>
+                    <div>
+                        <span className="text-gray-500 dark:text-gray-400 font-medium">
+                            Manufacturing Order:{' '}
+                        </span>
+                        <span className="font-semibold font-mono text-gray-900 dark:text-white">
+                            {product.manufacturingOrder}
+                        </span>
                     </div>
                 </div>
 
-                {/* 2. Barcode Input Section */}
+                {/* 2. Large Font Quantities Grid: Planned Quantity, Production Quantity, Remaining Quantity */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Planned Quantity Card */}
+                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                        <span className="text-xs sm:text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-3">
+                            Planned Quantity
+                        </span>
+                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
+                            {product.plannedQuantity}
+                        </span>
+                    </div>
+
+                    {/* Production Quantity Card */}
+                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                        <span className="text-xs sm:text-sm uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                            Production Quantity
+                        </span>
+                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
+                            {product.productionQuantity ?? 0}
+                        </span>
+                    </div>
+
+                    {/* Remaining Quantity Card */}
+                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                        <span className="text-xs sm:text-sm uppercase tracking-wider text-amber-600 dark:text-amber-400 font-semibold mb-3">
+                            Remaining Quantity
+                        </span>
+                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-none">
+                            {remainingQuantity}
+                        </span>
+                    </div>
+                </div>
+
+                {/* 3. Barcode Input Section */}
                 <div className="bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
                     <div>
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -223,7 +305,9 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={isCreatingBarcode || !barcodeInput.trim()}
+                            disabled={
+                                isCreatingBarcode || !barcodeInput.trim()
+                            }
                             className="whitespace-nowrap"
                         >
                             Add Barcode
@@ -231,7 +315,7 @@ const ProductDetails = () => {
                     </form>
                 </div>
 
-                {/* 3. Barcodes List Table */}
+                {/* 4. Barcodes List Table */}
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white">
