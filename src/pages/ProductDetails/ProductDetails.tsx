@@ -130,54 +130,59 @@ const ProductDetails = () => {
             />
 
             <div className="space-y-8">
-                {/* 1. Static Product Info Table */}
-                <div className="space-y-2">
-                    <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                        Product Information
-                    </h2>
-                    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                        <Table className="text-xs sm:text-base">
-                            <TableHead>
-                                <TableRow>
-                                    <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        Date
-                                    </TableHeadCell>
-                                    <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        Product Name
-                                    </TableHeadCell>
-                                    <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        Planned Quantity
-                                    </TableHeadCell>
-                                    <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        Production Quantity
-                                    </TableHeadCell>
-                                    <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        Manufacturing Order
-                                    </TableHeadCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                <TableRow className="bg-white dark:bg-gray-800">
-                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                        {moment(product.date).format(
-                                            'Do MMM, YYYY',
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-gray-900 dark:text-white">
-                                        {product.productName}
-                                    </TableCell>
-                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        {product.plannedQuantity}
-                                    </TableCell>
-                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 font-semibold text-blue-600 dark:text-blue-400">
-                                        {product.productionQuantity ?? 0}
-                                    </TableCell>
-                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                        {product.manufacturingOrder}
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
+                {/* 1. Product Info Section: 1:3 Grid Ratio */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* First Column (1 part): Date, Product Name, Manufacturing Order */}
+                    <div className="md:col-span-1 bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col justify-center space-y-4 shadow-xs">
+                        <div>
+                            <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
+                                Date
+                            </span>
+                            <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white mt-0.5">
+                                {moment(product.date).format('Do MMM, YYYY')}
+                            </p>
+                        </div>
+                        <hr className="border-gray-100 dark:border-gray-700/60" />
+                        <div>
+                            <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
+                                Product Name
+                            </span>
+                            <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mt-0.5">
+                                {product.productName}
+                            </p>
+                        </div>
+                        <hr className="border-gray-100 dark:border-gray-700/60" />
+                        <div>
+                            <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-medium">
+                                Manufacturing Order
+                            </span>
+                            <p className="text-sm sm:text-base font-semibold font-mono text-gray-900 dark:text-white mt-0.5">
+                                {product.manufacturingOrder}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Second Column (3 parts): Planned Quantity & Production Quantity in large font */}
+                    <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Planned Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-sm sm:text-base uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-2">
+                                Planned Quantity
+                            </span>
+                            <span className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                                {product.plannedQuantity}
+                            </span>
+                        </div>
+
+                        {/* Production Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-sm sm:text-base uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-2">
+                                Production Quantity
+                            </span>
+                            <span className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
+                                {product.productionQuantity ?? 0}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -189,7 +194,7 @@ const ProductDetails = () => {
                             Add Barcode
                         </h2>
                         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            Scan or type barcode here.
+                            Scan or type barcode here and press Enter.
                         </p>
                     </div>
                     <form
@@ -208,7 +213,9 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={isCreatingBarcode || !barcodeInput.trim()}
+                            disabled={
+                                isCreatingBarcode || !barcodeInput.trim()
+                            }
                             className="whitespace-nowrap"
                         >
                             Add Barcode
