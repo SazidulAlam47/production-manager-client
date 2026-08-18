@@ -8,9 +8,11 @@ import {
     TableHead,
     TableHeadCell,
     TableRow,
+    Button,
 } from 'flowbite-react';
 import moment from 'moment';
 import { IoDocumentTextOutline } from 'react-icons/io5';
+import { Link } from 'react-router';
 import AddProductModal from './modals/AddProductModal';
 import EditProductModal from './modals/EditProductModal';
 import DeleteProductModal from './modals/DeleteProductModal';
@@ -54,6 +56,9 @@ const Home = () => {
                                         Manufacturing Order
                                     </TableHeadCell>
                                     <TableHeadCell className="px-2 py-2 sm:px-4 sm:py-3">
+                                        Details
+                                    </TableHeadCell>
+                                    <TableHeadCell className="px-2 py-2 sm:px-4 sm:py-3">
                                         Actions
                                     </TableHeadCell>
                                 </TableRow>
@@ -69,7 +74,7 @@ const Home = () => {
                                                 'Do MMM, YYYY',
                                             )}
                                         </TableCell>
-                                        <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
+                                        <TableCell className="px-2 py-2 sm:px-4 sm:py-3 font-semibold text-gray-900 dark:text-white">
                                             {product.productName}
                                         </TableCell>
                                         <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
@@ -80,6 +85,18 @@ const Home = () => {
                                         </TableCell>
                                         <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
                                             {product.manufacturingOrder}
+                                        </TableCell>
+                                        <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
+                                            <Link
+                                                to={`/product-details/${product._id}`}
+                                            >
+                                                <Button
+                                                    size="xs"
+                                                    color="light"
+                                                >
+                                                    Details
+                                                </Button>
+                                            </Link>
                                         </TableCell>
                                         <TableCell className="px-2 py-2 sm:px-4 sm:py-3 flex items-center gap-1.5">
                                             <EditProductModal
