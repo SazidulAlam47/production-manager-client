@@ -18,9 +18,14 @@ const Header = () => {
                 </Link>
 
                 <nav className="flex items-center gap-6">
-                    <span className="text-md font-bold tracking-tight text-gray-600">
-                        Production Management
-                    </span>
+                    <Link
+                        to="/"
+                        className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+                    >
+                        <span className="text-md font-bold tracking-tight text-gray-600">
+                            Production Management
+                        </span>
+                    </Link>
                 </nav>
             </Container>
         </header>
