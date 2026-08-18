@@ -17,7 +17,6 @@ const DeleteBarcodeModal = ({ barcode }: DeleteBarcodeModalProps) => {
     const [deleteBarcode, { isLoading }] = useDeleteBarcodeMutation();
 
     const handleDeleteBarcode = async () => {
-        setOpenModal(false);
         const toastId = toast.loading('Deleting barcode...');
 
         try {
@@ -26,6 +25,7 @@ const DeleteBarcodeModal = ({ barcode }: DeleteBarcodeModalProps) => {
             toast.success('Barcode deleted successfully', {
                 id: toastId,
             });
+            setOpenModal(false);
         } catch (error: any) {
             toast.error(error.message || error.data || 'Something went wrong', {
                 id: toastId,

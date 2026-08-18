@@ -30,7 +30,6 @@ const AddProductModal = ({
     const [createProduct, { isLoading }] = useCreateProductMutation();
 
     const handleCreateProduct = async (data: FieldValues) => {
-        setOpenModal(false);
         const toastId = toast.loading('Adding Product...');
 
         try {
@@ -39,6 +38,7 @@ const AddProductModal = ({
             toast.success('Product added successfully', {
                 id: toastId,
             });
+            setOpenModal(false);
         } catch (error: any) {
             toast.error(error.message || error.data || 'Something went wrong', {
                 id: toastId,

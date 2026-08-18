@@ -18,7 +18,6 @@ const DeleteProductModal = ({ product }: DeleteProductModalProps) => {
     const [deleteProduct, { isLoading }] = useDeleteProductMutation();
 
     const handleDeleteProduct = async () => {
-        setOpenModal(false);
         const toastId = toast.loading('Deleting product...');
 
         try {
@@ -27,6 +26,7 @@ const DeleteProductModal = ({ product }: DeleteProductModalProps) => {
             toast.success('Product deleted successfully', {
                 id: toastId,
             });
+            setOpenModal(false);
         } catch (error: any) {
             toast.error(error.message || error.data || 'Something went wrong', {
                 id: toastId,

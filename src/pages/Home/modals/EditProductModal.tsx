@@ -22,7 +22,6 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
     const [updateProduct, { isLoading }] = useUpdateProductMutation();
 
     const handleUpdateProduct = async (data: FieldValues) => {
-        setOpenModal(false);
         const toastId = toast.loading('Updating Product...');
 
         try {
@@ -34,6 +33,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
             toast.success('Product updated successfully', {
                 id: toastId,
             });
+            setOpenModal(false);
         } catch (error: any) {
             toast.error(error.message || error.data || 'Something went wrong', {
                 id: toastId,
