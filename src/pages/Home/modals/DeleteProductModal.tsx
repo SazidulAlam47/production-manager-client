@@ -48,6 +48,7 @@ const DeleteProductModal = ({ product }: DeleteProductModalProps) => {
                 size="md"
                 onClose={() => setOpenModal(false)}
                 popup
+                dismissible
             >
                 <ModalHeader />
                 <ModalBody>

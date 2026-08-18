@@ -58,6 +58,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
                 size="md"
                 onClose={() => setOpenModal(false)}
                 popup
+                dismissible
             >
                 <ModalHeader className="mt-2">
                     <span className="ml-4">Update Product</span>

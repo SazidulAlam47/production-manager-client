@@ -60,6 +60,7 @@ const AddProductModal = ({
                 size="md"
                 onClose={() => setOpenModal(false)}
                 popup
+                dismissible
             >
                 <ModalHeader className="mt-2">
                     <span className="ml-4">Add Product</span>
