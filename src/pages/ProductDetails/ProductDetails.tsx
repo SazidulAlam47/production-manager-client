@@ -35,7 +35,6 @@ const ProductDetails = () => {
     const [barcodeInput, setBarcodeInput] = useState('');
     const [showCongratsModal, setShowCongratsModal] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const prevProductionQtyRef = useRef<number | null>(null);
 
     const {
         data: product,
@@ -66,26 +65,6 @@ const ProductDetails = () => {
         }
     }, [isProductError, navigate]);
 
-    // Check if Planned Quantity === Production Quantity and trigger Congratulations modal
-    useEffect(() => {
-        if (product && product.plannedQuantity > 0) {
-            const isCompleted =
-                product.productionQuantity === product.plannedQuantity;
-            const hasQtyChanged =
-                prevProductionQtyRef.current !== product.productionQuantity;
-
-            if (isCompleted && hasQtyChanged) {
-                setShowCongratsModal(true);
-                const timer = setTimeout(() => {
-                    setShowCongratsModal(false);
-                }, 3500); // Auto-close after 3.5 seconds
-
-                return () => clearTimeout(timer);
-            }
-            prevProductionQtyRef.current = product.productionQuantity;
-        }
-    }, [product]);
-
     const handleAddBarcode = async (e?: FormEvent) => {
         if (e) {
             e.preventDefault();
@@ -108,6 +87,20 @@ const ProductDetails = () => {
 
             toast.success('Barcode added successfully', { id: toastId });
             setBarcodeInput('');
+
+            // Check if adding this barcode achieves the planned quantity target
+            const newProductionQty = (product?.productionQuantity ?? 0) + 1;
+            if (
+                product &&
+                product.plannedQuantity > 0 &&
+                newProductionQty === product.plannedQuantity
+            ) {
+                setShowCongratsModal(true);
+                setTimeout(() => {
+                    setShowCongratsModal(false);
+                }, 3500); // Auto-close after 3.5 seconds
+            }
+
             // Keep focus on input for continuous scanning
             setTimeout(() => {
                 inputRef.current?.focus();
@@ -144,11 +137,18 @@ const ProductDetails = () => {
         return null;
     }
 
-    // Calculate Remaining Quantity (never negative)
-    const remainingQuantity = Math.max(
-        0,
-        (product.plannedQuantity || 0) - (product.productionQuantity || 0),
-    );
+    const plannedQty = product.plannedQuantity || 0;
+    const productionQty = product.productionQuantity || 0;
+    const isExtra = productionQty > plannedQty;
+
+    const diffQuantity = isExtra
+        ? productionQty - plannedQty
+        : plannedQty - productionQty;
+
+    const diffLabel = isExtra ? 'Extra Quantity' : 'Remaining Quantity';
+    const diffColorClass = isExtra
+        ? 'text-green-600 dark:text-green-400'
+        : 'text-amber-600 dark:text-amber-400';
 
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-8">
@@ -245,7 +245,7 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                {/* 2. Large Font Quantities Grid: Planned Quantity, Production Quantity, Remaining Quantity */}
+                {/* 2. Large Font Quantities Grid: Planned Quantity, Production Quantity, Remaining/Extra Quantity */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Planned Quantity Card */}
                     <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
@@ -267,13 +267,17 @@ const ProductDetails = () => {
                         </span>
                     </div>
 
-                    {/* Remaining Quantity Card */}
+                    {/* Remaining / Extra Quantity Card */}
                     <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                        <span className="text-xs sm:text-sm uppercase tracking-wider text-amber-600 dark:text-amber-400 font-semibold mb-3">
-                            Remaining Quantity
+                        <span
+                            className={`text-xs sm:text-sm uppercase tracking-wider font-semibold mb-3 ${diffColorClass}`}
+                        >
+                            {diffLabel}
                         </span>
-                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-none">
-                            {remainingQuantity}
+                        <span
+                            className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${diffColorClass}`}
+                        >
+                            {diffQuantity}
                         </span>
                     </div>
                 </div>
