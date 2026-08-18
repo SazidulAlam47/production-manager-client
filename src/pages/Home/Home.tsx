@@ -45,7 +45,6 @@ const Home = () => {
                         <AddProductModal buttonText="Add Product" />
                         <Button
                             size="xs"
-                            color="light"
                             onClick={handleDownloadExcel}
                             className="flex items-center"
                         >
