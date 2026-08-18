@@ -81,9 +81,12 @@ const ProductDetails = () => {
                 inputRef.current?.focus();
             }, 50);
         } catch (error: any) {
-            toast.error(error.message || error.data || 'Failed to add barcode', {
-                id: toastId,
-            });
+            toast.error(
+                error.message || error.data || 'Failed to add barcode',
+                {
+                    id: toastId,
+                },
+            );
             inputRef.current?.select();
         }
     };
@@ -102,9 +105,7 @@ const ProductDetails = () => {
 
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-8">
-            <title>
-                {product.productName} - Majesto Production Management
-            </title>
+            <title>{product.productName} - Majesto Production Management</title>
 
             {/* Back Button */}
             <div className="mb-6">
@@ -184,7 +185,7 @@ const ProductDetails = () => {
                             Add Barcode
                         </h2>
                         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            Scan or type barcode and press Enter to save.
+                            Scan or type barcode here.
                         </p>
                     </div>
                     <form
@@ -203,9 +204,7 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={
-                                isCreatingBarcode || !barcodeInput.trim()
-                            }
+                            disabled={isCreatingBarcode || !barcodeInput.trim()}
                             className="whitespace-nowrap"
                         >
                             Add Barcode
