@@ -210,7 +210,7 @@ const ProductDetails = () => {
                 </ModalBody>
             </Modal>
 
-            <div className="space-y-8">
+            <div className="space-y-3">
                 {/* 1. Small Font Metadata Bar at the Top */}
                 <div className="bg-white dark:bg-gray-800 px-5 py-3.5 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-xs">
                     <div>
@@ -305,9 +305,7 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={
-                                isCreatingBarcode || !barcodeInput.trim()
-                            }
+                            disabled={isCreatingBarcode || !barcodeInput.trim()}
                             className="whitespace-nowrap"
                         >
                             Add Barcode
