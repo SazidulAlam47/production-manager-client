@@ -7,7 +7,6 @@ type SectionHeadingProps = {
     subTitle: string;
     className?: string;
     position?: 'left' | 'center';
-    size?: 'small' | 'medium';
 };
 
 const SectionHeading = ({
@@ -15,20 +14,18 @@ const SectionHeading = ({
     subTitle,
     className,
     position = 'center',
-    size = 'medium',
 }: SectionHeadingProps) => {
     return (
         <div className={cn('flex flex-col gap-2 mb-4', className)}>
             <TitleText
-                className={cn(
-                    { 'text-left': position === 'left' },
-                    { 'text-2xl sm:text-3xl': size === 'small' }
-                )}
+                className={cn('text-6xl sm:text-6xl', {
+                    'text-left': position === 'left',
+                })}
             >
                 {title}
             </TitleText>
             <NormalText
-                className={cn('max-w-[7200px]', {
+                className={cn('max-w-[7200px] text-xl', {
                     'mx-auto text-center': position === 'center',
                 })}
             >

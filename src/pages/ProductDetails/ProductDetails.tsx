@@ -20,10 +20,11 @@ import {
     Button,
 } from 'flowbite-react';
 import moment from 'moment';
-import { HiArrowLeft } from 'react-icons/hi';
+import { HiArrowLeft, HiOutlineDownload } from 'react-icons/hi';
 import { IoBarcodeOutline } from 'react-icons/io5';
 import { toast } from 'sonner';
 import DeleteBarcodeModal from './modals/DeleteBarcodeModal';
+import { exportProductBarcodesToExcel } from '../../utils/exportToExcel';
 
 const ProductDetails = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -93,7 +94,16 @@ const ProductDetails = () => {
                     id: toastId,
                 },
             );
-            inputRef.current?.select();
+            setBarcodeInput('');
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 50);
+        }
+    };
+
+    const handleDownloadExcel = () => {
+        if (product) {
+            exportProductBarcodesToExcel(product, barcodes || []);
         }
     };
 
@@ -169,7 +179,7 @@ const ProductDetails = () => {
                             <span className="text-sm sm:text-base uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-2">
                                 Planned Quantity
                             </span>
-                            <span className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                            <span className="text-9xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                                 {product.plannedQuantity}
                             </span>
                         </div>
@@ -179,7 +189,7 @@ const ProductDetails = () => {
                             <span className="text-sm sm:text-base uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-2">
                                 Production Quantity
                             </span>
-                            <span className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
+                            <span className="text-9xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
                                 {product.productionQuantity ?? 0}
                             </span>
                         </div>
@@ -213,9 +223,7 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={
-                                isCreatingBarcode || !barcodeInput.trim()
-                            }
+                            disabled={isCreatingBarcode || !barcodeInput.trim()}
                             className="whitespace-nowrap"
                         >
                             Add Barcode
@@ -229,6 +237,16 @@ const ProductDetails = () => {
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                             Scanned Barcodes ({barcodes?.length || 0})
                         </h2>
+                        <Button
+                            size="xs"
+                            color="light"
+                            onClick={handleDownloadExcel}
+                            disabled={!barcodes || barcodes.length === 0}
+                            className="flex items-center"
+                        >
+                            <HiOutlineDownload className="mr-1.5 h-4 w-4" />
+                            Download Excel
+                        </Button>
                     </div>
 
                     {isBarcodesLoading ? (

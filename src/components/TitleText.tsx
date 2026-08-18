@@ -11,7 +11,7 @@ const TitleText = ({ className, children }: SectionTitleProps) => {
         <h2
             className={cn(
                 'text-[#111418] text-3xl font-bold leading-tight sm:text-4xl sm:font-black sm:leading-tight sm:tracking-[-0.033em] text-center',
-                className
+                className,
             )}
         >
             {children}
