@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useGetProductByIdQuery } from '../../redux/api/productApi';
 import {
@@ -48,13 +48,19 @@ const ProductDetails = () => {
         useCreateBarcodeMutation();
 
     useEffect(() => {
+        if (product?.productName) {
+            document.title = `${product.productName} - Majesto Production Management`;
+        }
+    }, [product?.productName]);
+
+    useEffect(() => {
         if (isProductError) {
             toast.error('Product not found');
             navigate('/');
         }
     }, [isProductError, navigate]);
 
-    const handleAddBarcode = async (e?: React.FormEvent) => {
+    const handleAddBarcode = async (e?: FormEvent) => {
         if (e) {
             e.preventDefault();
         }
@@ -105,8 +111,6 @@ const ProductDetails = () => {
 
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-8">
-            <title>{product.productName} - Majesto Production Management</title>
-
             {/* Back Button */}
             <div className="mb-6">
                 <Link

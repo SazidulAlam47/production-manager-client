@@ -23,7 +23,7 @@ const Home = () => {
 
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-10">
-            <title>Production Management - Products</title>
+            <title>Majesto Production Management</title>
             <SectionHeading
                 title="Production Management"
                 subTitle="View and manage your manufacturing orders, production plans, and products"
@@ -90,10 +90,7 @@ const Home = () => {
                                             <Link
                                                 to={`/product-details/${product._id}`}
                                             >
-                                                <Button
-                                                    size="xs"
-                                                    color="light"
-                                                >
+                                                <Button size="xs" color="light">
                                                     Details
                                                 </Button>
                                             </Link>
