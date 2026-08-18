@@ -1,18 +1,8 @@
-import { Link, useLocation } from 'react-router';
+import { Link } from 'react-router';
 import Container from '../Container';
-import { cn } from '../../utils/cn';
 import logoImage from '../../assets/Majesto.webp';
 
-const headerLinks = [
-    {
-        path: '/',
-        title: 'Products',
-    },
-];
-
 const Header = () => {
-    const location = useLocation();
-
     return (
         <header className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-30">
             <Container className="py-4 flex items-center justify-between">
@@ -25,26 +15,12 @@ const Header = () => {
                         alt="Majesto Logo"
                         className="h-4 w-auto"
                     />
-                    <span className="text-lg sm:text-xl font-bold tracking-tight text-gray-600">
-                        Production Management
-                    </span>
                 </Link>
 
                 <nav className="flex items-center gap-6">
-                    {headerLinks.map((link) => (
-                        <Link
-                            key={link.path}
-                            to={link.path}
-                            className={cn(
-                                'text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-white',
-                                location.pathname === link.path
-                                    ? 'text-gray-900 dark:text-white font-semibold'
-                                    : 'text-gray-500 dark:text-gray-400',
-                            )}
-                        >
-                            {link.title}
-                        </Link>
-                    ))}
+                    <span className="text-md font-bold tracking-tight text-gray-600">
+                        Production Management
+                    </span>
                 </nav>
             </Container>
         </header>
