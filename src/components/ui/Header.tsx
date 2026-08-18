@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 import Container from '../Container';
 import { cn } from '../../utils/cn';
+import logoImage from '../../assets/Majesto.webp';
 
 const headerLinks = [
     {
@@ -17,9 +18,16 @@ const Header = () => {
             <Container className="py-4 flex items-center justify-between">
                 <Link
                     to="/"
-                    className="text-lg sm:text-xl font-bold tracking-tight text-gray-900 dark:text-white hover:opacity-90 transition-opacity"
+                    className="flex items-center gap-3 hover:opacity-90 transition-opacity"
                 >
-                    Majesto Production Management
+                    <img
+                        src={logoImage}
+                        alt="Majesto Logo"
+                        className="h-4 w-auto"
+                    />
+                    <span className="text-lg sm:text-xl font-bold tracking-tight text-gray-600">
+                        Production Management
+                    </span>
                 </Link>
 
                 <nav className="flex items-center gap-6">
