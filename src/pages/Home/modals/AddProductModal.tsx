@@ -28,7 +28,7 @@ const AddProductModal = ({
         try {
             await createProduct(data).unwrap();
 
-            toast.success('Product added successfully', {
+            toast.success('Plan added successfully', {
                 id: toastId,
             });
             setOpenModal(false);
