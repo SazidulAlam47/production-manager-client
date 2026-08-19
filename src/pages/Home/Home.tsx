@@ -9,12 +9,15 @@ import {
     TableHeadCell,
     TableRow,
     Button,
+    TextInput,
+    Datepicker,
 } from 'flowbite-react';
 import moment from 'moment';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { HiOutlineDownload } from 'react-icons/hi';
+import { MdDateRange } from 'react-icons/md';
 import { Link } from 'react-router';
-import { useMemo } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import AddProductModal from './modals/AddProductModal';
 import EditProductModal from './modals/EditProductModal';
 import DeleteProductModal from './modals/DeleteProductModal';
@@ -22,7 +25,36 @@ import { useGetAllProductsQuery } from '../../redux/api/productApi';
 import { exportProductsToExcel } from '../../utils/exportToExcel';
 
 const Home = () => {
-    const { data: products, isLoading } = useGetAllProductsQuery();
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const datePickerRef = useRef<HTMLDivElement>(null);
+
+    const dateQuery = selectedDate
+        ? moment(selectedDate).format('YYYY-MM-DD')
+        : undefined;
+
+    const { data: products, isLoading } = useGetAllProductsQuery(
+        dateQuery ? { date: dateQuery } : undefined,
+    );
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                datePickerRef.current &&
+                !datePickerRef.current.contains(event.target as Node)
+            ) {
+                setShowDatePicker(false);
+            }
+        };
+
+        if (showDatePicker) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showDatePicker]);
 
     const sortedProducts = useMemo(() => {
         if (!products) return [];
@@ -49,8 +81,54 @@ const Home = () => {
                 <Loader />
             ) : sortedProducts && sortedProducts.length ? (
                 <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                        <AddProductModal buttonText="Add Plan" />
+                    <div className="flex flex-wrap justify-between items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <AddProductModal buttonText="Add Plan" />
+                            {/* Date Filter Picker */}
+                            <div className="relative" ref={datePickerRef}>
+                                <div className="flex items-center gap-1.5">
+                                    <TextInput
+                                        icon={MdDateRange}
+                                        value={
+                                            selectedDate
+                                                ? moment(selectedDate).format(
+                                                      'D MMMM, YYYY',
+                                                  )
+                                                : ''
+                                        }
+                                        placeholder="Filter by date..."
+                                        onClick={() =>
+                                            setShowDatePicker((prev) => !prev)
+                                        }
+                                        readOnly
+                                        sizing="sm"
+                                        className="w-44 sm:w-48 cursor-pointer"
+                                    />
+                                    {selectedDate && (
+                                        <Button
+                                            size="xs"
+                                            color="light"
+                                            onClick={() =>
+                                                setSelectedDate(null)
+                                            }
+                                        >
+                                            Clear
+                                        </Button>
+                                    )}
+                                </div>
+                                {showDatePicker && (
+                                    <div className="absolute left-0 z-30 mt-1 shadow-lg rounded-lg">
+                                        <Datepicker
+                                            onChange={(date) => {
+                                                setSelectedDate(date);
+                                                setShowDatePicker(false);
+                                            }}
+                                            inline
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                         <Button
                             size="xs"
                             onClick={handleDownloadExcel}
@@ -134,19 +212,74 @@ const Home = () => {
                     </div>
                 </div>
             ) : (
-                <div className="min-h-[40dvh] rounded-lg flex flex-col justify-center items-center text-center p-8">
-                    <div className="text-gray-400 mb-4">
-                        <IoDocumentTextOutline size={80} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        No Products Yet
-                    </h3>
-                    <p className="max-w-125 text-gray-500 dark:text-gray-400 mb-4">
-                        You haven't created any products yet. Start organizing
-                        your production schedule by adding your first product!
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <AddProductModal buttonText="Add Plan" />
+                <div className="space-y-4">
+                    {selectedDate && (
+                        <div className="flex items-center gap-2">
+                            <AddProductModal buttonText="Add Plan" />
+                            <div className="relative" ref={datePickerRef}>
+                                <div className="flex items-center gap-1.5">
+                                    <TextInput
+                                        icon={MdDateRange}
+                                        value={moment(selectedDate).format(
+                                            'D MMMM, YYYY',
+                                        )}
+                                        placeholder="Filter by date..."
+                                        onClick={() =>
+                                            setShowDatePicker((prev) => !prev)
+                                        }
+                                        readOnly
+                                        sizing="sm"
+                                        className="w-44 sm:w-48 cursor-pointer"
+                                    />
+                                    <Button
+                                        size="xs"
+                                        color="light"
+                                        onClick={() => setSelectedDate(null)}
+                                    >
+                                        Clear
+                                    </Button>
+                                </div>
+                                {showDatePicker && (
+                                    <div className="absolute left-0 z-30 mt-1 shadow-lg rounded-lg">
+                                        <Datepicker
+                                            onChange={(date) => {
+                                                setSelectedDate(date);
+                                                setShowDatePicker(false);
+                                            }}
+                                            inline
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                    <div className="min-h-[40dvh] rounded-lg flex flex-col justify-center items-center text-center p-8">
+                        <div className="text-gray-400 mb-4">
+                            <IoDocumentTextOutline size={80} />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            {selectedDate
+                                ? 'No Products Found For This Date'
+                                : 'No Products Yet'}
+                        </h3>
+                        <p className="max-w-125 text-gray-500 dark:text-gray-400 mb-4">
+                            {selectedDate
+                                ? `There are no production plans scheduled for ${moment(selectedDate).format('Do MMMM, YYYY')}.`
+                                : "You haven't created any products yet. Start organizing your production schedule by adding your first product!"}
+                        </p>
+                        <div className="flex items-center gap-2">
+                            {selectedDate ? (
+                                <Button
+                                    size="xs"
+                                    color="light"
+                                    onClick={() => setSelectedDate(null)}
+                                >
+                                    Clear Filter
+                                </Button>
+                            ) : (
+                                <AddProductModal buttonText="Add Plan" />
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
