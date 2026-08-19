@@ -246,14 +246,19 @@ const ProductDetails = () => {
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-3">
             {/* Back Button */}
-            <div className="mb-3">
-                <Link
-                    to="/"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                    <HiArrowLeft size={16} />
-                    Back to Plans
-                </Link>
+            <div className="flex justify-between items-center mb-1">
+                <div>
+                    <Link
+                        to="/"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    >
+                        <HiArrowLeft size={16} />
+                    </Link>
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    Production Dashboard
+                </h1>
+                <div />
             </div>
 
             {/* Congratulations Modal */}
@@ -298,7 +303,7 @@ const ProductDetails = () => {
 
             <div className="space-y-3">
                 {/* 1. Small Font Metadata Bar at the Top */}
-                <div className="bg-white dark:bg-gray-800 px-5 py-3.5 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-xs">
+                <div className="bg-white dark:bg-gray-800 px-5 py-3 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-xs">
                     <div>
                         <span className="text-gray-500 dark:text-gray-400 font-medium">
                             Date:{' '}
@@ -321,8 +326,8 @@ const ProductDetails = () => {
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Total Planned Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                            <span className="text-xs sm:text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-3">
+                        <div className="bg-white dark:bg-gray-800 px-6 py-4 sm:px-8 sm:py-5 md:px-8 md:py-5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
                                 Total Planned Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
@@ -331,8 +336,8 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Total Production Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                            <span className="text-xs sm:text-sm uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                        <div className="bg-white dark:bg-gray-800 px-6 py-4 sm:px-8 sm:py-5 md:px-8 md:py-5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
                                 Total Production Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
@@ -341,9 +346,9 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Total Remaining / Extra Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                        <div className="bg-white dark:bg-gray-800 px-6 py-4 sm:px-8 sm:py-5 md:px-8 md:py-5 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
                             <span
-                                className={`text-xs sm:text-sm uppercase tracking-wider font-semibold mb-3 ${totalDiffColorClass}`}
+                                className={`text-sm sm:text-lg font-bold uppercase tracking-wider mb-2 ${totalDiffColorClass}`}
                             >
                                 {totalDiffLabel}
                             </span>
@@ -355,14 +360,17 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* 3. Selected Product Production Summary Section */}
+                <h2 className="text-2xl text-gray-900 dark:text-white mb-4 text-center">
+                    Running Production:{' '}
+                    <span className="font-bold">{product.productName}</span>
+                </h2>
+                {/* 3. Selected Product (Running Production) Summary Section */}
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Planned Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                            <span className="text-xs sm:text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-3">
-                                {product.productName} Planned Quantity
+                        <div className="bg-blue-50/50 dark:bg-slate-800/90 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-2">
+                                Running {product.productName} Planned Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
                                 {plannedQty}
@@ -370,9 +378,10 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Production Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                            <span className="text-xs sm:text-sm uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-3">
-                                {product.productName} Production Quantity
+                        <div className="bg-blue-50/50 dark:bg-slate-800/90 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
+                                Running {product.productName} Production
+                                Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
                                 {productionQty}
@@ -380,11 +389,11 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Remaining / Extra Quantity Card */}
-                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                        <div className="bg-blue-50/50 dark:bg-slate-800/90 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex flex-col items-center justify-center text-center shadow-xs">
                             <span
-                                className={`text-xs sm:text-sm uppercase tracking-wider font-semibold mb-3 ${diffColorClass}`}
+                                className={`text-sm sm:text-lg font-bold uppercase tracking-wider mb-2 ${diffColorClass}`}
                             >
-                                {product.productName} {diffLabel}
+                                Running {product.productName} {diffLabel}
                             </span>
                             <span
                                 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${diffColorClass}`}
