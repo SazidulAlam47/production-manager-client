@@ -60,6 +60,7 @@ const barcodeApi = baseApi.injectEndpoints({
 
 export const {
     useGetAllBarcodesByProductIdQuery,
+    useLazyGetAllBarcodesByProductIdQuery,
     useCreateBarcodeMutation,
     useDeleteBarcodeMutation,
 } = barcodeApi;

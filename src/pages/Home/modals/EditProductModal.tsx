@@ -22,7 +22,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
     const [updateProduct, { isLoading }] = useUpdateProductMutation();
 
     const handleUpdateProduct = async (data: FieldValues) => {
-        const toastId = toast.loading('Updating Product...');
+        const toastId = toast.loading('Updating Plan...');
 
         try {
             await updateProduct({
@@ -30,7 +30,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
                 data,
             }).unwrap();
 
-            toast.success('Product updated successfully', {
+            toast.success('Plan updated successfully', {
                 id: toastId,
             });
             setOpenModal(false);
@@ -61,7 +61,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
                 dismissible
             >
                 <ModalHeader className="mt-2">
-                    <span className="ml-4">Update Product</span>
+                    <span className="ml-4">Update Plan</span>
                 </ModalHeader>
                 <ModalBody>
                     <div className="space-y-6">
@@ -96,7 +96,7 @@ const EditProductModal = ({ product }: EditProductModalProps) => {
                                 className="w-full"
                                 disabled={isLoading}
                             >
-                                Update Product
+                                Update Plan
                             </Button>
                         </SForm>
                     </div>

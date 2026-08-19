@@ -8,6 +8,7 @@ import {
 import {
     useCreateBarcodeMutation,
     useGetAllBarcodesByProductIdQuery,
+    useLazyGetAllBarcodesByProductIdQuery,
 } from '../../redux/api/barcodeApi';
 import Container from '../../components/Container';
 import Loader from '../../components/Loader';
@@ -70,6 +71,9 @@ const ProductDetails = () => {
                 skip: !productId,
             },
         );
+
+    const [triggerGetBarcodes, { isFetching: isExportingBarcodes }] =
+        useLazyGetAllBarcodesByProductIdQuery();
 
     const barcodes = barcodeResponse?.data;
     const barcodeMeta = barcodeResponse?.meta;
@@ -160,9 +164,32 @@ const ProductDetails = () => {
         }
     };
 
-    const handleDownloadExcel = () => {
-        if (product) {
-            exportProductBarcodesToExcel(product, barcodes || []);
+    const handleDownloadExcel = async () => {
+        if (!product) return;
+        const toastId = toast.loading(
+            'Preparing full barcodes Excel report...',
+        );
+        try {
+            const res = await triggerGetBarcodes({
+                productId: product._id as string,
+                params: { limit: 0 },
+            }).unwrap();
+
+            if (res?.data && res.data.length > 0) {
+                exportProductBarcodesToExcel(product, res.data);
+                toast.success('Excel report downloaded successfully', {
+                    id: toastId,
+                });
+            } else {
+                toast.error('No barcodes found to export', { id: toastId });
+            }
+        } catch (error: any) {
+            toast.error(
+                error?.message ||
+                    error?.data ||
+                    'Failed to export barcodes report',
+                { id: toastId },
+            );
         }
     };
 
@@ -423,11 +450,17 @@ const ProductDetails = () => {
                             size="xs"
                             color="light"
                             onClick={handleDownloadExcel}
-                            disabled={!barcodes || barcodes.length === 0}
+                            disabled={
+                                isExportingBarcodes ||
+                                (barcodeMeta?.total === 0 &&
+                                    barcodes?.length === 0)
+                            }
                             className="flex items-center"
                         >
                             <HiOutlineDownload className="mr-1.5 h-4 w-4" />
-                            Download Excel
+                            {isExportingBarcodes
+                                ? 'Exporting...'
+                                : 'Download Excel'}
                         </Button>
                     </div>
 
