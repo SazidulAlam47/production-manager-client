@@ -15,13 +15,6 @@ type AddProductModalProps = {
     disabled?: boolean;
 };
 
-const productDefaultValues = {
-    date: undefined,
-    productName: '',
-    plannedQuantity: '',
-    manufacturingOrder: '',
-};
-
 const AddProductModal = ({
     buttonText = 'Add Product',
     disabled,
@@ -44,6 +37,13 @@ const AddProductModal = ({
                 id: toastId,
             });
         }
+    };
+
+    const productDefaultValues = {
+        date: new Date(),
+        productName: '',
+        plannedQuantity: '',
+        manufacturingOrder: '',
     };
 
     return (
