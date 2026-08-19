@@ -15,7 +15,7 @@ import {
 } from 'flowbite-react';
 import moment from 'moment';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { HiOutlineDownload } from 'react-icons/hi';
+import { HiOutlineDownload, HiSearch } from 'react-icons/hi';
 import { MdDateRange } from 'react-icons/md';
 import { Link } from 'react-router';
 import { useMemo, useState, useRef, useEffect } from 'react';
@@ -27,6 +27,8 @@ import { exportProductsToExcel } from '../../utils/exportToExcel';
 
 const Home = () => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -36,10 +38,19 @@ const Home = () => {
         ? moment(selectedDate).format('YYYY-MM-DD')
         : undefined;
 
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchTerm.trim());
+            setCurrentPage(1);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
     const { data: responseData, isLoading } = useGetAllProductsQuery({
         page: currentPage,
         limit,
         date: dateQuery,
+        searchTerm: debouncedSearch || undefined,
     });
 
     const products = responseData?.data;
@@ -75,6 +86,13 @@ const Home = () => {
         setCurrentPage(1);
     };
 
+    const handleClearAllFilters = () => {
+        setSelectedDate(null);
+        setSearchTerm('');
+        setDebouncedSearch('');
+        setCurrentPage(1);
+    };
+
     const sortedProducts = useMemo(() => {
         if (!products) return [];
         return [...products].sort(
@@ -87,6 +105,8 @@ const Home = () => {
             exportProductsToExcel(sortedProducts, 'majesto_production_report');
         }
     };
+
+    const isFiltered = Boolean(selectedDate || debouncedSearch);
 
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-10">
@@ -140,6 +160,31 @@ const Home = () => {
                                             inline
                                         />
                                     </div>
+                                )}
+                            </div>
+
+                            {/* Search Input */}
+                            <div className="relative">
+                                <TextInput
+                                    icon={HiSearch}
+                                    type="text"
+                                    placeholder="Search Product or MO..."
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    sizing="sm"
+                                    className="w-48 sm:w-60"
+                                />
+                                {searchTerm && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs font-bold"
+                                        title="Clear search"
+                                    >
+                                        ✕
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -239,16 +284,21 @@ const Home = () => {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {selectedDate && (
-                        <div className="flex items-center gap-2">
+                    {isFiltered && (
+                        <div className="flex flex-wrap items-center gap-2">
                             <AddProductModal buttonText="Add Plan" />
+                            {/* Date Filter Picker */}
                             <div className="relative" ref={datePickerRef}>
                                 <div className="flex items-center gap-1.5">
                                     <TextInput
                                         icon={MdDateRange}
-                                        value={moment(selectedDate).format(
-                                            'D MMMM, YYYY',
-                                        )}
+                                        value={
+                                            selectedDate
+                                                ? moment(selectedDate).format(
+                                                      'D MMMM, YYYY',
+                                                  )
+                                                : ''
+                                        }
                                         placeholder="Filter by date..."
                                         onClick={() =>
                                             setShowDatePicker((prev) => !prev)
@@ -257,13 +307,15 @@ const Home = () => {
                                         sizing="sm"
                                         className="w-44 sm:w-48 cursor-pointer"
                                     />
-                                    <Button
-                                        size="xs"
-                                        color="light"
-                                        onClick={handleClearDate}
-                                    >
-                                        Clear
-                                    </Button>
+                                    {selectedDate && (
+                                        <Button
+                                            size="xs"
+                                            color="light"
+                                            onClick={handleClearDate}
+                                        >
+                                            Clear
+                                        </Button>
+                                    )}
                                 </div>
                                 {showDatePicker && (
                                     <div className="absolute left-0 z-30 mt-1 shadow-lg rounded-lg">
@@ -274,6 +326,31 @@ const Home = () => {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Search Input */}
+                            <div className="relative">
+                                <TextInput
+                                    icon={HiSearch}
+                                    type="text"
+                                    placeholder="Search Product or MO..."
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    sizing="sm"
+                                    className="w-48 sm:w-60"
+                                />
+                                {searchTerm && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xs font-bold"
+                                        title="Clear search"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
                     <div className="min-h-[40dvh] rounded-lg flex flex-col justify-center items-center text-center p-8">
@@ -281,23 +358,23 @@ const Home = () => {
                             <IoDocumentTextOutline size={80} />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            {selectedDate
-                                ? 'No Products Found For This Date'
+                            {isFiltered
+                                ? 'No Products Found'
                                 : 'No Products Yet'}
                         </h3>
                         <p className="max-w-125 text-gray-500 dark:text-gray-400 mb-4">
-                            {selectedDate
-                                ? `There are no production plans scheduled for ${moment(selectedDate).format('Do MMMM, YYYY')}.`
+                            {isFiltered
+                                ? 'No products match your current search/date filters. Try changing or clearing your filters.'
                                 : "You haven't created any products yet. Start organizing your production schedule by adding your first product!"}
                         </p>
                         <div className="flex items-center gap-2">
-                            {selectedDate ? (
+                            {isFiltered ? (
                                 <Button
                                     size="xs"
                                     color="light"
-                                    onClick={handleClearDate}
+                                    onClick={handleClearAllFilters}
                                 >
-                                    Clear Filter
+                                    Clear Filters
                                 </Button>
                             ) : (
                                 <AddProductModal buttonText="Add Plan" />
