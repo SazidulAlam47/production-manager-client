@@ -123,18 +123,25 @@ const ProductDetails = () => {
 
         if (!productId) return;
 
-        const toastId = toast.loading('Adding barcode...');
+        const toastId = toast.loading('Updating production...');
         try {
             await createBarcode({
                 productId,
                 barcode: trimmedBarcode,
             }).unwrap();
 
-            toast.success('Barcode added successfully', { id: toastId });
+            const newProductionQty = (product?.productionQuantity ?? 0) + 1;
+            const productName = product?.productName ?? 'Product';
+
+            toast.success(
+                `Production of ${productName} is now at ${newProductionQty} units.`,
+                {
+                    id: toastId,
+                },
+            );
             setBarcodeInput('');
 
             // Check if adding this barcode achieves the planned quantity target
-            const newProductionQty = (product?.productionQuantity ?? 0) + 1;
             if (
                 product &&
                 product.plannedQuantity > 0 &&
@@ -429,9 +436,7 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={
-                                isCreatingBarcode || !barcodeInput.trim()
-                            }
+                            disabled={isCreatingBarcode || !barcodeInput.trim()}
                             className="whitespace-nowrap"
                         >
                             Add Barcode
