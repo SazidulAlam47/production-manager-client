@@ -50,7 +50,7 @@ const Home = () => {
             ) : sortedProducts && sortedProducts.length ? (
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                        <AddProductModal buttonText="Add Product" />
+                        <AddProductModal buttonText="Add Plan" />
                         <Button
                             size="xs"
                             onClick={handleDownloadExcel}
@@ -146,7 +146,7 @@ const Home = () => {
                         your production schedule by adding your first product!
                     </p>
                     <div className="flex items-center gap-2">
-                        <AddProductModal buttonText="Add Product" />
+                        <AddProductModal buttonText="Add Plan" />
                     </div>
                 </div>
             )}

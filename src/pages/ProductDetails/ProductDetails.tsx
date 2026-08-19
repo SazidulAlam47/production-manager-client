@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { useGetProductByIdQuery } from '../../redux/api/productApi';
+import {
+    useGetDailySummaryQuery,
+    useGetProductByIdQuery,
+} from '../../redux/api/productApi';
 import {
     useCreateBarcodeMutation,
     useGetAllBarcodesByProductIdQuery,
 } from '../../redux/api/barcodeApi';
 import Container from '../../components/Container';
-import SectionHeading from '../../components/SectionHeading';
 import Loader from '../../components/Loader';
 import {
     Table,
@@ -42,6 +44,14 @@ const ProductDetails = () => {
         isError: isProductError,
     } = useGetProductByIdQuery(productId as string, {
         skip: !productId,
+    });
+
+    const productDateStr = product?.date
+        ? moment(product.date).format('YYYY-MM-DD')
+        : undefined;
+
+    const { data: dailySummary } = useGetDailySummaryQuery(productDateStr, {
+        skip: !productDateStr,
     });
 
     const { data: barcodes, isLoading: isBarcodesLoading } =
@@ -137,6 +147,7 @@ const ProductDetails = () => {
         return null;
     }
 
+    // Selected Product Calculations
     const plannedQty = product.plannedQuantity || 0;
     const productionQty = product.productionQuantity || 0;
     const isExtra = productionQty > plannedQty;
@@ -150,10 +161,27 @@ const ProductDetails = () => {
         ? 'text-green-600 dark:text-green-400'
         : 'text-amber-600 dark:text-amber-400';
 
+    // Daily Total Calculations
+    const totalPlannedQty = dailySummary?.totalPlannedQuantity ?? plannedQty;
+    const totalProductionQty =
+        dailySummary?.totalProductionQuantity ?? productionQty;
+    const isTotalExtra = totalProductionQty > totalPlannedQty;
+
+    const totalDiffQuantity = isTotalExtra
+        ? totalProductionQty - totalPlannedQty
+        : totalPlannedQty - totalProductionQty;
+
+    const totalDiffLabel = isTotalExtra
+        ? 'Total Extra Quantity'
+        : 'Total Remaining Quantity';
+    const totalDiffColorClass = isTotalExtra
+        ? 'text-green-600 dark:text-green-400'
+        : 'text-amber-600 dark:text-amber-400';
+
     return (
-        <Container className="min-h-[calc(100dvh-198px)] my-8">
+        <Container className="min-h-[calc(100dvh-198px)] my-3">
             {/* Back Button */}
-            <div className="mb-6">
+            <div className="mb-3">
                 <Link
                     to="/"
                     className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -162,13 +190,6 @@ const ProductDetails = () => {
                     Back to Products
                 </Link>
             </div>
-
-            {/* Page Header */}
-            <SectionHeading
-                title={product.productName}
-                subTitle="Product Details & Barcode Management"
-                className="mb-6"
-            />
 
             {/* Congratulations Modal */}
             <Modal
@@ -245,44 +266,85 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                {/* 2. Large Font Quantities Grid: Planned Quantity, Production Quantity, Remaining/Extra Quantity */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Planned Quantity Card */}
-                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                        <span className="text-xs sm:text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-3">
-                            Planned Quantity
-                        </span>
-                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
-                            {product.plannedQuantity}
-                        </span>
-                    </div>
+                {/* 2. Daily Total Production Summary Section */}
+                <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Total Planned Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-xs sm:text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-3">
+                                Total Planned Quantity
+                            </span>
+                            <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
+                                {totalPlannedQty}
+                            </span>
+                        </div>
 
-                    {/* Production Quantity Card */}
-                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                        <span className="text-xs sm:text-sm uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-3">
-                            Production Quantity
-                        </span>
-                        <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
-                            {product.productionQuantity ?? 0}
-                        </span>
-                    </div>
+                        {/* Total Production Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-xs sm:text-sm uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                                Total Production Quantity
+                            </span>
+                            <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
+                                {totalProductionQty}
+                            </span>
+                        </div>
 
-                    {/* Remaining / Extra Quantity Card */}
-                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
-                        <span
-                            className={`text-xs sm:text-sm uppercase tracking-wider font-semibold mb-3 ${diffColorClass}`}
-                        >
-                            {diffLabel}
-                        </span>
-                        <span
-                            className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${diffColorClass}`}
-                        >
-                            {diffQuantity}
-                        </span>
+                        {/* Total Remaining / Extra Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span
+                                className={`text-xs sm:text-sm uppercase tracking-wider font-semibold mb-3 ${totalDiffColorClass}`}
+                            >
+                                {totalDiffLabel}
+                            </span>
+                            <span
+                                className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${totalDiffColorClass}`}
+                            >
+                                {totalDiffQuantity}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                {/* 3. Barcode Input Section */}
+                {/* 3. Selected Product Production Summary Section */}
+                <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Planned Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-xs sm:text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-3">
+                                {product.productName} Planned Quantity
+                            </span>
+                            <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
+                                {plannedQty}
+                            </span>
+                        </div>
+
+                        {/* Production Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span className="text-xs sm:text-sm uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                                {product.productName} Production Quantity
+                            </span>
+                            <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
+                                {productionQty}
+                            </span>
+                        </div>
+
+                        {/* Remaining / Extra Quantity Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 md:p-10 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center shadow-xs">
+                            <span
+                                className={`text-xs sm:text-sm uppercase tracking-wider font-semibold mb-3 ${diffColorClass}`}
+                            >
+                                {product.productName} {diffLabel}
+                            </span>
+                            <span
+                                className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${diffColorClass}`}
+                            >
+                                {diffQuantity}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4. Barcode Input Section */}
                 <div className="bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
                     <div>
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -317,7 +379,7 @@ const ProductDetails = () => {
                     </form>
                 </div>
 
-                {/* 4. Barcodes List Table */}
+                {/* 5. Barcodes List Table */}
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white">

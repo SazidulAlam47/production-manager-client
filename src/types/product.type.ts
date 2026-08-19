@@ -8,3 +8,10 @@ export type TProduct = {
     createdAt?: string;
     updatedAt?: string;
 };
+
+export type TDailySummary = {
+    date: string;
+    totalPlannedQuantity: number;
+    totalProductionQuantity: number;
+    totalRemainingQuantity: number;
+};

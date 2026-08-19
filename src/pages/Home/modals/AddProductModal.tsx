@@ -16,7 +16,7 @@ type AddProductModalProps = {
 };
 
 const AddProductModal = ({
-    buttonText = 'Add Product',
+    buttonText = 'Add Plan',
     disabled,
 }: AddProductModalProps) => {
     const [openModal, setOpenModal] = useState(false);
@@ -98,7 +98,7 @@ const AddProductModal = ({
                                 className="w-full"
                                 disabled={isLoading}
                             >
-                                Add Product
+                                Add Plan
                             </Button>
                         </SForm>
                     </div>

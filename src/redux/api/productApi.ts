@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { TProduct } from '../../types';
+import type { TDailySummary, TProduct } from '../../types';
 import { baseApi } from './baseApi';
 
 const productApi = baseApi.injectEndpoints({
@@ -11,6 +11,15 @@ const productApi = baseApi.injectEndpoints({
                 params,
             }),
             providesTags: ['product'],
+        }),
+        getDailySummary: build.query<TDailySummary, string | void>({
+            query: (date) => ({
+                url: date
+                    ? `/products/daily-summary?date=${date}`
+                    : '/products/daily-summary',
+                method: 'GET',
+            }),
+            providesTags: ['product', 'barcode'],
         }),
         getProductById: build.query<TProduct, string>({
             query: (productId: string) => ({
@@ -50,6 +59,7 @@ const productApi = baseApi.injectEndpoints({
 
 export const {
     useGetAllProductsQuery,
+    useGetDailySummaryQuery,
     useGetProductByIdQuery,
     useCreateProductMutation,
     useUpdateProductMutation,
