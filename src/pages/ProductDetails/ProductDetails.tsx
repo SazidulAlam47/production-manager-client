@@ -405,15 +405,12 @@ const ProductDetails = () => {
                 </div>
 
                 {/* 4. Barcode Input Section */}
-                <div className="bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
+                <div className="bg-gray-50 dark:bg-gray-800/50 py-3 px-4 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2">
                     <div>
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                             <IoBarcodeOutline size={20} />
                             Add Barcode
                         </h2>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            Scan or type barcode here and press Enter.
-                        </p>
                     </div>
                     <form
                         onSubmit={handleAddBarcode}
