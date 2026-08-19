@@ -307,20 +307,6 @@ const ProductDetails = () => {
                             {moment(product.date).format('Do MMM, YYYY')}
                         </span>
                     </div>
-                    <div className="hidden sm:block text-gray-300 dark:text-gray-600">
-                        |
-                    </div>
-                    <div>
-                        <span className="text-gray-500 dark:text-gray-400 font-medium">
-                            Product Name:{' '}
-                        </span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                            {product.productName}
-                        </span>
-                    </div>
-                    <div className="hidden sm:block text-gray-300 dark:text-gray-600">
-                        |
-                    </div>
                     <div>
                         <span className="text-gray-500 dark:text-gray-400 font-medium">
                             Manufacturing Order:{' '}
