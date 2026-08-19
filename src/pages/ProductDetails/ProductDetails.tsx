@@ -23,6 +23,7 @@ import {
     Modal,
     ModalBody,
     ModalHeader,
+    Pagination,
 } from 'flowbite-react';
 import moment from 'moment';
 import { HiArrowLeft, HiOutlineDownload } from 'react-icons/hi';
@@ -35,6 +36,8 @@ const ProductDetails = () => {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
     const [barcodeInput, setBarcodeInput] = useState('');
+    const [barcodePage, setBarcodePage] = useState(1);
+    const [barcodeLimit] = useState(10);
     const [showCongratsModal, setShowCongratsModal] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,10 +57,22 @@ const ProductDetails = () => {
         skip: !productDateStr,
     });
 
-    const { data: barcodes, isLoading: isBarcodesLoading } =
-        useGetAllBarcodesByProductIdQuery(productId as string, {
-            skip: !productId,
-        });
+    const { data: barcodeResponse, isLoading: isBarcodesLoading } =
+        useGetAllBarcodesByProductIdQuery(
+            {
+                productId: productId as string,
+                params: {
+                    page: barcodePage,
+                    limit: barcodeLimit,
+                },
+            },
+            {
+                skip: !productId,
+            },
+        );
+
+    const barcodes = barcodeResponse?.data;
+    const barcodeMeta = barcodeResponse?.meta;
 
     const [createBarcode, { isLoading: isCreatingBarcode }] =
         useCreateBarcodeMutation();
@@ -74,6 +89,22 @@ const ProductDetails = () => {
             navigate('/');
         }
     }, [isProductError, navigate]);
+
+    const handleCloseCongratsModal = () => {
+        setShowCongratsModal(false);
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 100);
+    };
+
+    useEffect(() => {
+        if (!showCongratsModal) {
+            const timer = setTimeout(() => {
+                inputRef.current?.focus();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [showCongratsModal]);
 
     const handleAddBarcode = async (e?: FormEvent) => {
         if (e) {
@@ -107,7 +138,7 @@ const ProductDetails = () => {
             ) {
                 setShowCongratsModal(true);
                 setTimeout(() => {
-                    setShowCongratsModal(false);
+                    handleCloseCongratsModal();
                 }, 3500); // Auto-close after 3.5 seconds
             }
 
@@ -195,7 +226,7 @@ const ProductDetails = () => {
             <Modal
                 show={showCongratsModal}
                 size="md"
-                onClose={() => setShowCongratsModal(false)}
+                onClose={handleCloseCongratsModal}
                 popup
                 dismissible
             >
@@ -222,7 +253,7 @@ const ProductDetails = () => {
                                 color="success"
                                 className="mx-auto"
                                 size="xs"
-                                onClick={() => setShowCongratsModal(false)}
+                                onClick={handleCloseCongratsModal}
                             >
                                 Great Job!
                             </Button>
@@ -371,7 +402,9 @@ const ProductDetails = () => {
                         />
                         <Button
                             type="submit"
-                            disabled={isCreatingBarcode || !barcodeInput.trim()}
+                            disabled={
+                                isCreatingBarcode || !barcodeInput.trim()
+                            }
                             className="whitespace-nowrap"
                         >
                             Add Barcode
@@ -383,7 +416,8 @@ const ProductDetails = () => {
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                            Scanned Barcodes ({barcodes?.length || 0})
+                            Scanned Barcodes (
+                            {barcodeMeta?.total ?? barcodes?.length ?? 0})
                         </h2>
                         <Button
                             size="xs"
@@ -400,54 +434,80 @@ const ProductDetails = () => {
                     {isBarcodesLoading ? (
                         <Loader />
                     ) : barcodes && barcodes.length ? (
-                        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                            <Table className="text-xs sm:text-base" hoverable>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3 w-16">
-                                            #
-                                        </TableHeadCell>
-                                        <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                            Barcode
-                                        </TableHeadCell>
-                                        <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                            Created At
-                                        </TableHeadCell>
-                                        <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3 w-24">
-                                            Action
-                                        </TableHeadCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                    {barcodes.map((barcode, index) => (
-                                        <TableRow
-                                            key={barcode._id}
-                                            className="bg-white dark:bg-gray-800"
-                                        >
-                                            <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 text-gray-500">
-                                                {index + 1}
-                                            </TableCell>
-                                            <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 font-mono font-medium text-gray-900 dark:text-white">
-                                                {barcode.barcode}
-                                            </TableCell>
-                                            <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 text-gray-500 dark:text-gray-400">
-                                                {barcode.createdAt
-                                                    ? moment(
-                                                          barcode.createdAt,
-                                                      ).format(
-                                                          'Do MMM YYYY, h:mm:ss a',
-                                                      )
-                                                    : 'N/A'}
-                                            </TableCell>
-                                            <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3">
-                                                <DeleteBarcodeModal
-                                                    barcode={barcode}
-                                                />
-                                            </TableCell>
+                        <div className="space-y-3">
+                            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                                <Table
+                                    className="text-xs sm:text-base"
+                                    hoverable
+                                >
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3 w-16">
+                                                #
+                                            </TableHeadCell>
+                                            <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
+                                                Barcode
+                                            </TableHeadCell>
+                                            <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3">
+                                                Created At
+                                            </TableHeadCell>
+                                            <TableHeadCell className="px-3 py-2.5 sm:px-4 sm:py-3 w-24">
+                                                Action
+                                            </TableHeadCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHead>
+                                    <TableBody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                        {barcodes.map((barcode, index) => {
+                                            const rowIndex =
+                                                (barcodePage - 1) *
+                                                    barcodeLimit +
+                                                index +
+                                                1;
+                                            return (
+                                                <TableRow
+                                                    key={barcode._id}
+                                                    className="bg-white dark:bg-gray-800"
+                                                >
+                                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 text-gray-500">
+                                                        {rowIndex}
+                                                    </TableCell>
+                                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 font-mono font-medium text-gray-900 dark:text-white">
+                                                        {barcode.barcode}
+                                                    </TableCell>
+                                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3 text-gray-500 dark:text-gray-400">
+                                                        {barcode.createdAt
+                                                            ? moment(
+                                                                  barcode.createdAt,
+                                                              ).format(
+                                                                  'Do MMM YYYY, h:mm:ss a',
+                                                              )
+                                                            : 'N/A'}
+                                                    </TableCell>
+                                                    <TableCell className="px-3 py-2.5 sm:px-4 sm:py-3">
+                                                        <DeleteBarcodeModal
+                                                            barcode={barcode}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </div>
+
+                            {/* Barcodes Pagination */}
+                            {barcodeMeta && barcodeMeta.totalPage > 1 && (
+                                <div className="flex justify-center items-center pt-2">
+                                    <Pagination
+                                        currentPage={barcodePage}
+                                        totalPages={barcodeMeta.totalPage}
+                                        onPageChange={(page) =>
+                                            setBarcodePage(page)
+                                        }
+                                        showIcons
+                                    />
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="min-h-[25dvh] rounded-lg border border-dashed border-gray-300 dark:border-gray-700 flex flex-col justify-center items-center text-center p-8">

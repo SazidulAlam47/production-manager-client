@@ -11,6 +11,7 @@ import {
     Button,
     TextInput,
     Datepicker,
+    Pagination,
 } from 'flowbite-react';
 import moment from 'moment';
 import { IoDocumentTextOutline } from 'react-icons/io5';
@@ -26,6 +27,8 @@ import { exportProductsToExcel } from '../../utils/exportToExcel';
 
 const Home = () => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const datePickerRef = useRef<HTMLDivElement>(null);
 
@@ -33,9 +36,14 @@ const Home = () => {
         ? moment(selectedDate).format('YYYY-MM-DD')
         : undefined;
 
-    const { data: products, isLoading } = useGetAllProductsQuery(
-        dateQuery ? { date: dateQuery } : undefined,
-    );
+    const { data: responseData, isLoading } = useGetAllProductsQuery({
+        page: currentPage,
+        limit,
+        date: dateQuery,
+    });
+
+    const products = responseData?.data;
+    const meta = responseData?.meta;
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -55,6 +63,17 @@ const Home = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [showDatePicker]);
+
+    const handleDateSelect = (date: Date | null) => {
+        setSelectedDate(date);
+        setCurrentPage(1);
+        setShowDatePicker(false);
+    };
+
+    const handleClearDate = () => {
+        setSelectedDate(null);
+        setCurrentPage(1);
+    };
 
     const sortedProducts = useMemo(() => {
         if (!products) return [];
@@ -108,9 +127,7 @@ const Home = () => {
                                         <Button
                                             size="xs"
                                             color="light"
-                                            onClick={() =>
-                                                setSelectedDate(null)
-                                            }
+                                            onClick={handleClearDate}
                                         >
                                             Clear
                                         </Button>
@@ -119,10 +136,7 @@ const Home = () => {
                                 {showDatePicker && (
                                     <div className="absolute left-0 z-30 mt-1 shadow-lg rounded-lg">
                                         <Datepicker
-                                            onChange={(date) => {
-                                                setSelectedDate(date);
-                                                setShowDatePicker(false);
-                                            }}
+                                            onChange={handleDateSelect}
                                             inline
                                         />
                                     </div>
@@ -210,6 +224,18 @@ const Home = () => {
                             </TableBody>
                         </Table>
                     </div>
+
+                    {/* Pagination */}
+                    {meta && meta.totalPage > 1 && (
+                        <div className="flex justify-center items-center pt-2">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={meta.totalPage}
+                                onPageChange={(page) => setCurrentPage(page)}
+                                showIcons
+                            />
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -234,7 +260,7 @@ const Home = () => {
                                     <Button
                                         size="xs"
                                         color="light"
-                                        onClick={() => setSelectedDate(null)}
+                                        onClick={handleClearDate}
                                     >
                                         Clear
                                     </Button>
@@ -242,10 +268,7 @@ const Home = () => {
                                 {showDatePicker && (
                                     <div className="absolute left-0 z-30 mt-1 shadow-lg rounded-lg">
                                         <Datepicker
-                                            onChange={(date) => {
-                                                setSelectedDate(date);
-                                                setShowDatePicker(false);
-                                            }}
+                                            onChange={handleDateSelect}
                                             inline
                                         />
                                     </div>
@@ -272,7 +295,7 @@ const Home = () => {
                                 <Button
                                     size="xs"
                                     color="light"
-                                    onClick={() => setSelectedDate(null)}
+                                    onClick={handleClearDate}
                                 >
                                     Clear Filter
                                 </Button>

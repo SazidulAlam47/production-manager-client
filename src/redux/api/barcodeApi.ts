@@ -1,13 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { TBarcode } from '../../types';
+import type {
+    TBarcode,
+    TPaginatedData,
+    TResponseSuccessType,
+} from '../../types';
 import { baseApi } from './baseApi';
 
 const barcodeApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        getAllBarcodesByProductId: build.query<TBarcode[], string>({
-            query: (productId: string) => ({
-                url: `/barcode/product/${productId}`,
-                method: 'GET',
+        getAllBarcodesByProductId: build.query<
+            TPaginatedData<TBarcode>,
+            { productId: string; params?: Record<string, any> } | string
+        >({
+            query: (args) => {
+                const productId =
+                    typeof args === 'string' ? args : args.productId;
+                const params =
+                    typeof args === 'string' ? undefined : args.params;
+                return {
+                    url: `/barcode/product/${productId}`,
+                    method: 'GET',
+                    params,
+                };
+            },
+            transformResponse: (
+                response: TResponseSuccessType<TBarcode[]>,
+            ) => ({
+                data: response.data,
+                meta: response.meta,
             }),
             providesTags: ['barcode'],
         }),
@@ -20,6 +40,9 @@ const barcodeApi = baseApi.injectEndpoints({
                 method: 'POST',
                 data,
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TBarcode>,
+            ) => response.data,
             invalidatesTags: ['barcode', 'product'],
         }),
         deleteBarcode: build.mutation<TBarcode, string>({
@@ -27,6 +50,9 @@ const barcodeApi = baseApi.injectEndpoints({
                 url: `/barcode/${barcodeId}`,
                 method: 'DELETE',
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TBarcode>,
+            ) => response.data,
             invalidatesTags: ['barcode', 'product'],
         }),
     }),

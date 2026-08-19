@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getFromLocalStorage } from '../../utils/localStorage';
-import type { TResponseErrorType, TResponseSuccessType } from '../../types';
+import type { TResponseErrorType } from '../../types';
 
 export const authKey = 'accessToken';
 
@@ -24,15 +24,15 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
     function (response) {
-        const responseObject: TResponseSuccessType = {
-            data: response?.data?.data,
-        };
-        return responseObject as any;
+        return response.data;
     },
     async function (error) {
         const responseObject: TResponseErrorType = {
             statusCode: error?.status || 500,
-            message: error?.response?.data?.message || 'Something went wrong!',
+            message:
+                error?.response?.data?.message ||
+                error?.message ||
+                'Something went wrong!',
         };
         return Promise.reject(responseObject);
     },

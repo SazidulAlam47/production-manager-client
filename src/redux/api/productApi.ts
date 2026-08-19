@@ -1,14 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { TDailySummary, TProduct } from '../../types';
+import type {
+    TDailySummary,
+    TPaginatedData,
+    TProduct,
+    TResponseSuccessType,
+} from '../../types';
 import { baseApi } from './baseApi';
 
 const productApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        getAllProducts: build.query<TProduct[], Record<string, any> | void>({
+        getAllProducts: build.query<
+            TPaginatedData<TProduct>,
+            Record<string, any> | void
+        >({
             query: (params) => ({
                 url: '/products',
                 method: 'GET',
                 params,
+            }),
+            transformResponse: (
+                response: TResponseSuccessType<TProduct[]>,
+            ) => ({
+                data: response.data,
+                meta: response.meta,
             }),
             providesTags: ['product'],
         }),
@@ -19,6 +33,9 @@ const productApi = baseApi.injectEndpoints({
                     : '/products/daily-summary',
                 method: 'GET',
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TDailySummary>,
+            ) => response.data,
             providesTags: ['product', 'barcode'],
         }),
         getProductById: build.query<TProduct, string>({
@@ -26,6 +43,9 @@ const productApi = baseApi.injectEndpoints({
                 url: `/products/${productId}`,
                 method: 'GET',
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TProduct>,
+            ) => response.data,
             providesTags: ['product'],
         }),
         createProduct: build.mutation<TProduct, Partial<TProduct>>({
@@ -34,6 +54,9 @@ const productApi = baseApi.injectEndpoints({
                 method: 'POST',
                 data,
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TProduct>,
+            ) => response.data,
             invalidatesTags: ['product'],
         }),
         updateProduct: build.mutation<
@@ -45,6 +68,9 @@ const productApi = baseApi.injectEndpoints({
                 method: 'PATCH',
                 data: args.data,
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TProduct>,
+            ) => response.data,
             invalidatesTags: ['product'],
         }),
         deleteProduct: build.mutation<TProduct, string>({
@@ -52,6 +78,9 @@ const productApi = baseApi.injectEndpoints({
                 url: `/products/${productId}`,
                 method: 'DELETE',
             }),
+            transformResponse: (
+                response: TResponseSuccessType<TProduct>,
+            ) => response.data,
             invalidatesTags: ['product'],
         }),
     }),
