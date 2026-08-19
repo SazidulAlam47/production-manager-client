@@ -14,6 +14,7 @@ import moment from 'moment';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { HiOutlineDownload } from 'react-icons/hi';
 import { Link } from 'react-router';
+import { useMemo } from 'react';
 import AddProductModal from './modals/AddProductModal';
 import EditProductModal from './modals/EditProductModal';
 import DeleteProductModal from './modals/DeleteProductModal';
@@ -23,9 +24,16 @@ import { exportProductsToExcel } from '../../utils/exportToExcel';
 const Home = () => {
     const { data: products, isLoading } = useGetAllProductsQuery();
 
+    const sortedProducts = useMemo(() => {
+        if (!products) return [];
+        return [...products].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+    }, [products]);
+
     const handleDownloadExcel = () => {
-        if (products && products.length > 0) {
-            exportProductsToExcel(products, 'majesto_production_report');
+        if (sortedProducts && sortedProducts.length > 0) {
+            exportProductsToExcel(sortedProducts, 'majesto_production_report');
         }
     };
 
@@ -39,7 +47,7 @@ const Home = () => {
             />
             {isLoading ? (
                 <Loader />
-            ) : products && products.length ? (
+            ) : sortedProducts && sortedProducts.length ? (
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
                         <AddProductModal buttonText="Add Product" />
@@ -80,7 +88,7 @@ const Home = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody className="divide-y divide-gray-200">
-                                {products.map((product) => (
+                                {sortedProducts.map((product) => (
                                     <TableRow
                                         key={product._id}
                                         className="bg-white dark:border-gray-700 dark:bg-gray-800"

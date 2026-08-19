@@ -63,7 +63,7 @@ const AddProductModal = ({
                 dismissible
             >
                 <ModalHeader className="mt-2">
-                    <span className="ml-4">Add Product</span>
+                    <span className="ml-4">Add Plan</span>
                 </ModalHeader>
                 <ModalBody>
                     <div className="space-y-6">
