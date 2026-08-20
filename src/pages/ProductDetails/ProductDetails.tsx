@@ -246,7 +246,7 @@ const ProductDetails = () => {
     return (
         <Container className="min-h-[calc(100dvh-198px)] my-3">
             {/* Back Button */}
-            <div className="flex justify-between items-center mb-1">
+            <div className="flex justify-between items-center mb-2">
                 <div>
                     <Link
                         to="/"
@@ -256,7 +256,8 @@ const ProductDetails = () => {
                     </Link>
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                    Production Status
+                    Production Status of{' '}
+                    {moment(product.date).format('D MMM, YYYY')}
                 </h1>
                 <div />
             </div>
@@ -302,27 +303,7 @@ const ProductDetails = () => {
             </Modal>
 
             <div className="space-y-3">
-                {/* 1. Small Font Metadata Bar at the Top */}
-                <div className="bg-white dark:bg-gray-800 px-5 py-3 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm shadow-xs">
-                    <div>
-                        <span className="text-gray-500 dark:text-gray-400 font-medium">
-                            Date:{' '}
-                        </span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                            {moment(product.date).format('Do MMM, YYYY')}
-                        </span>
-                    </div>
-                    <div>
-                        <span className="text-gray-500 dark:text-gray-400 font-medium">
-                            Manufacturing Order:{' '}
-                        </span>
-                        <span className="font-semibold font-mono text-gray-900 dark:text-white">
-                            {product.manufacturingOrder}
-                        </span>
-                    </div>
-                </div>
-
-                {/* 2. Daily Total Production Summary Section */}
+                {/* Daily Total Production Summary Section */}
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Total Planned Quantity Card */}
@@ -360,11 +341,19 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
-                <h2 className="text-2xl text-gray-900 dark:text-white mb-4 text-center">
-                    Running Production:{' '}
-                    <span className="font-bold">{product.productName}</span>
-                </h2>
-                {/* 3. Selected Product (Running Production) Summary Section */}
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-0 mb-0 pt-2">
+                    <h2 className="text-2xl text-gray-900 dark:text-white mb-4">
+                        Running Production:{' '}
+                        <span className="font-bold">{product.productName}</span>
+                    </h2>
+                    <h2 className="text-2xl text-gray-900 dark:text-white mb-4">
+                        Manufacturing Order:{' '}
+                        <span className="font-bold">
+                            {product.manufacturingOrder}
+                        </span>
+                    </h2>
+                </div>
+                {/* Selected Product (Running Production) Summary Section */}
                 <div className="space-y-3">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Planned Quantity Card */}
@@ -380,8 +369,7 @@ const ProductDetails = () => {
                         {/* Production Quantity Card */}
                         <div className="bg-blue-50/50 dark:bg-slate-800/90 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex flex-col items-center justify-center text-center shadow-xs">
                             <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
-                                {product.productName} Production
-                                Quantity
+                                {product.productName} Production Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
                                 {productionQty}
@@ -403,7 +391,6 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
-
                 {/* 4. Barcode Input Section */}
                 <div className="bg-gray-50 dark:bg-gray-800/50 py-3 px-4 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2">
                     <div>
@@ -435,7 +422,6 @@ const ProductDetails = () => {
                         </Button>
                     </form>
                 </div>
-
                 {/* 5. Barcodes List Table */}
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
