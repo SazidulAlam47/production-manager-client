@@ -370,7 +370,7 @@ const ProductDetails = () => {
                         {/* Planned Quantity Card */}
                         <div className="bg-blue-50/50 dark:bg-slate-800/90 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex flex-col items-center justify-center text-center shadow-xs">
                             <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-2">
-                                Running {product.productName} Planned Quantity
+                                {product.productName} Planned Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-tight leading-none">
                                 {plannedQty}
@@ -380,7 +380,7 @@ const ProductDetails = () => {
                         {/* Production Quantity Card */}
                         <div className="bg-blue-50/50 dark:bg-slate-800/90 px-4 py-4 sm:px-5 sm:py-5 md:px-6 md:py-5 rounded-xl border border-blue-100 dark:border-blue-900/40 flex flex-col items-center justify-center text-center shadow-xs">
                             <span className="text-sm sm:text-lg font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
-                                Running {product.productName} Production
+                                {product.productName} Production
                                 Quantity
                             </span>
                             <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
@@ -393,7 +393,7 @@ const ProductDetails = () => {
                             <span
                                 className={`text-sm sm:text-lg font-bold uppercase tracking-wider mb-2 ${diffColorClass}`}
                             >
-                                Running {product.productName} {diffLabel}
+                                {product.productName} {diffLabel}
                             </span>
                             <span
                                 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none ${diffColorClass}`}
