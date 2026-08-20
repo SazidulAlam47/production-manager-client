@@ -131,7 +131,9 @@ const Home = () => {
             }
         } catch (error: any) {
             toast.error(
-                error?.message || error?.data || 'Failed to export Excel report',
+                error?.message ||
+                    error?.data ||
+                    'Failed to export Excel report',
                 { id: toastId },
             );
         }
@@ -269,7 +271,7 @@ const Home = () => {
                                         >
                                             <TableCell className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                                 {moment(product.date).format(
-                                                    'Do MMM, YYYY',
+                                                    'D MMM, YYYY',
                                                 )}
                                             </TableCell>
                                             <TableCell className="px-2 py-2 sm:px-4 sm:py-3 font-semibold text-gray-900 dark:text-white">
@@ -279,7 +281,8 @@ const Home = () => {
                                                 {product.plannedQuantity}
                                             </TableCell>
                                             <TableCell className="px-2 py-2 sm:px-4 sm:py-3 font-medium text-blue-600 dark:text-blue-400">
-                                                {product.productionQuantity ?? 0}
+                                                {product.productionQuantity ??
+                                                    0}
                                             </TableCell>
                                             <TableCell className="px-2 py-2 sm:px-4 sm:py-3">
                                                 {product.manufacturingOrder}
